@@ -6,6 +6,8 @@ export interface User {
   email: string;
   phone: string;
   address: string;
+  bloodGroup?: string;
+  documents?: { name: string; type: string }[];
 }
 
 export interface Event {
@@ -18,12 +20,18 @@ export interface Event {
   image: string;
   description: string;
   price: string;
+  requirements?: string[];
+  benefits?: string[];
+  capacity?: number;
+  registeredCount?: number;
+  attendees?: string[];
 }
 
 export interface Announcement {
   id: string;
   title: string;
   date: string;
+  time?: string;
   author: string;
   content: string;
   image: string;
@@ -48,8 +56,19 @@ export interface Hall {
   id: string;
   name: string;
   capacity: number;
-  pricePerHour: number;
+  pricePerDay: number;
   image: string;
   description: string;
   amenities: string[];
+}
+
+export interface Booking {
+  id: string;
+  userId: string;
+  hallId: string;
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
+  status: 'Pending' | 'Approved' | 'Rejected';
+  totalAmount: number;
+  purpose: string;
 }

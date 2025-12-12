@@ -1,11 +1,53 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Share2, Settings, Activity, FileText, Download, Calendar } from 'lucide-react';
+import React, { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ChevronLeft, Share2, Settings, Activity, FileText, Download, CheckCircle, Wrench, AlertCircle, Calendar } from 'lucide-react';
 import { ANNOUNCEMENTS } from '../constants';
 
 export const AnnouncementDetails = () => {
     const navigate = useNavigate();
-    const item = ANNOUNCEMENTS[0];
+    const { id } = useParams();
+    const item = ANNOUNCEMENTS.find(a => a.id === id) || ANNOUNCEMENTS[0];
+
+    const [viewCount, setViewCount] = useState(1240);
+    const [isAcknowledged, setIsAcknowledged] = useState(false);
+
+    const handleAcknowledge = () => {
+        if (!isAcknowledged) {
+            setIsAcknowledged(true);
+            setViewCount(prev => prev + 1);
+        }
+    };
+
+    const getCategoryStyles = (category: string) => {
+        switch (category) {
+            case 'Maintenance':
+                return {
+                    bg: 'bg-emerald-50',
+                    text: 'text-emerald-600',
+                    icon: <Wrench size={12} />
+                };
+            case 'Alert':
+                return {
+                    bg: 'bg-red-50',
+                    text: 'text-red-600',
+                    icon: <AlertCircle size={12} />
+                };
+            case 'Policy':
+                return {
+                    bg: 'bg-orange-50',
+                    text: 'text-orange-600',
+                    icon: <FileText size={12} />
+                };
+            default:
+                return {
+                    bg: 'bg-blue-50',
+                    text: 'text-blue-600',
+                    icon: <Calendar size={12} />
+                };
+        }
+    };
+
+    const style = getCategoryStyles(item.category);
 
     return (
         <div className="min-h-screen bg-white">
@@ -25,11 +67,19 @@ export const AnnouncementDetails = () => {
             <div className="relative -mt-10 bg-white rounded-t-[40px] px-8 pt-10 min-h-[60vh] shadow-inner">
                  <div className="w-12 h-1.5 bg-gray-100 rounded-full mx-auto mb-8"></div>
                  
-                 <div className="flex items-center gap-3 mb-4">
-                    <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-bold uppercase flex items-center gap-1">
-                        <Settings size={12} /> {item.category}
+                 <div className="flex flex-col items-start gap-3 mb-5">
+                    <span className={`${style.bg} ${style.text} px-3 py-1 rounded-full text-xs font-bold uppercase flex items-center gap-1.5`}>
+                        {style.icon} {item.category}
                     </span>
-                    <span className="text-gray-400 text-sm">{item.date}</span>
+                    <span className="text-gray-400 text-sm font-medium ml-1 flex items-center gap-2">
+                        {item.date} 
+                        {item.time && (
+                            <>
+                                <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                                {item.time}
+                            </>
+                        )}
+                    </span>
                  </div>
 
                  <h1 className="text-3xl font-bold text-gray-900 mb-6 leading-tight">{item.title}</h1>
@@ -41,7 +91,7 @@ export const AnnouncementDetails = () => {
                         <p className="text-xs text-gray-500">Community Manager</p>
                     </div>
                     <div className="ml-auto flex items-center text-gray-400 text-xs">
-                         <Activity size={14} className="mr-1" /> 1.2k views
+                         <Activity size={14} className="mr-1" /> {viewCount.toLocaleString()} views
                     </div>
                  </div>
 
@@ -78,10 +128,18 @@ export const AnnouncementDetails = () => {
                     </div>
                  </div>
 
-                 {/* Action Button - Sticky if needed, but here inline */}
                  <div className="pb-10">
-                    <button className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-200 active:scale-95 transition-transform flex justify-center items-center gap-2">
-                        <Calendar size={20} /> Add to Calendar
+                    <button 
+                        onClick={handleAcknowledge}
+                        disabled={isAcknowledged}
+                        className={`w-full py-4 rounded-2xl font-bold flex justify-center items-center gap-2 transition-all duration-300 ${
+                            isAcknowledged 
+                            ? 'bg-green-100 text-green-700 shadow-none cursor-default' 
+                            : 'bg-blue-600 text-white shadow-lg shadow-blue-200 active:scale-95'
+                        }`}
+                    >
+                        <CheckCircle size={20} className={isAcknowledged ? "fill-green-700 text-white" : ""} /> 
+                        {isAcknowledged ? 'Acknowledged' : 'Acknowledge'}
                     </button>
                  </div>
             </div>

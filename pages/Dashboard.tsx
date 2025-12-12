@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Calendar, Zap, Shield, Users, MapPin } from 'lucide-react';
+import { Bell, Calendar, Zap, Shield, Users, MapPin, ChevronRight, Megaphone } from 'lucide-react';
 import { CURRENT_USER, EVENTS, ANNOUNCEMENTS } from '../constants';
 import { PullToRefresh } from '../components/PullToRefresh';
 
@@ -24,6 +24,15 @@ export const Dashboard = () => {
   const handleRefresh = async () => {
     // Simulate data fetching
     await new Promise(resolve => setTimeout(resolve, 1500));
+  };
+
+  const getCategoryColor = (category: string) => {
+      switch(category) {
+          case 'Policy': return 'bg-emerald-500';
+          case 'Alert': return 'bg-orange-500';
+          case 'Maintenance': return 'bg-blue-500';
+          default: return 'bg-gray-500';
+      }
   };
 
   return (
@@ -61,32 +70,51 @@ export const Dashboard = () => {
                 onClick={() => navigate('/book-hall')} 
             />
             <div className="col-span-2 grid grid-cols-3 gap-4">
-                <SmallTile icon={<Bell className="text-orange-500" size={20} />} label="News" onClick={() => navigate('/announcements')} />
+                <SmallTile icon={<Megaphone className="text-orange-500" size={20} />} label="News" onClick={() => navigate('/announcements')} />
                 <SmallTile icon={<Shield className="text-red-500" size={20} />} label="SOS" onClick={() => navigate('/emergency')} />
-                <SmallTile icon={<Users className="text-green-500" size={20} />} label="Helpers" onClick={() => navigate('/volunteers')} />
+                <SmallTile icon={<Users className="text-green-500" size={20} />} label="Volunteers" onClick={() => navigate('/volunteers')} />
             </div>
         </div>
 
-        {/* Carousel */}
-        <div className="pl-6 mb-8">
-            <div className="flex justify-between items-center pr-6 mb-4">
-            <h2 className="text-lg font-bold text-gray-800">Happening Now</h2>
-            <button className="text-blue-600 text-sm font-medium" onClick={() => navigate('/events')}>See All</button>
+        {/* Upcoming Events Carousel (Updated Style) */}
+        <div className="flex flex-col mb-8">
+            <div className="flex items-center justify-between px-6 mb-4">
+                <h3 className="text-lg font-bold text-slate-900">Upcoming Events</h3>
+                <button onClick={() => navigate('/events')} className="text-sm font-semibold text-blue-600 hover:text-blue-700">See All</button>
             </div>
-            <div className="flex overflow-x-auto space-x-4 pb-4 pr-6 no-scrollbar snap-x">
-                {EVENTS.map(event => (
-                    <div key={event.id} onClick={() => navigate(`/event/${event.id}`)} className="min-w-[280px] h-[320px] relative rounded-3xl overflow-hidden shadow-lg snap-center flex-shrink-0">
-                        <img src={event.image} className="w-full h-full object-cover" alt={event.title} />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                        <div className="absolute bottom-0 left-0 p-5 w-full">
-                            <span className="bg-white/20 backdrop-blur-md text-white text-xs px-2 py-1 rounded-md mb-2 inline-block border border-white/10">{event.category}</span>
-                            <h3 className="text-white text-xl font-bold mb-1 leading-tight">{event.title}</h3>
-                            <div className="flex items-center text-gray-300 text-sm">
-                                <MapPin size={14} className="mr-1" /> {event.location}
-                            </div>
-                        </div>
-                        <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-bold border border-white/10">
+            <div className="flex overflow-x-auto no-scrollbar pb-6 px-6 gap-4 snap-x snap-mandatory">
+                {EVENTS.map((event, index) => (
+                    <div key={event.id} onClick={() => navigate(`/event/${event.id}`)} className="relative min-w-[85%] h-72 rounded-3xl overflow-hidden snap-center shadow-lg group cursor-pointer bg-gray-200">
+                        <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url("${event.image}")` }}></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                        
+                        {/* Date Badge */}
+                        <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md border border-white/30 text-white px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide">
                             {event.date.split(',')[0]}
+                        </div>
+
+                        {/* Content */}
+                        <div className="absolute bottom-0 left-0 p-6 w-full">
+                            <div className="flex items-center gap-2 mb-2">
+                                <MapPin className="text-white w-4 h-4" />
+                                <span className="text-white/90 text-sm font-medium truncate">{event.location}</span>
+                            </div>
+                            <h4 className="text-white text-2xl font-bold leading-tight mb-3 line-clamp-2">{event.title}</h4>
+                            
+                            <div className="flex items-center justify-between">
+                                {/* Category Tag */}
+                                <span className="px-3 py-1 bg-white/20 backdrop-blur-md border border-white/10 rounded-lg text-white text-[10px] font-bold uppercase tracking-wide">
+                                    {event.category}
+                                </span>
+
+                                {/* Fake Attendees Stack for Visual Appeal */}
+                                <div className="flex -space-x-2 overflow-hidden">
+                                    <img alt="Attendee" className="inline-block h-6 w-6 rounded-full ring-2 ring-white/20 object-cover" src={`https://picsum.photos/seed/${event.id}a/50/50`} />
+                                    <img alt="Attendee" className="inline-block h-6 w-6 rounded-full ring-2 ring-white/20 object-cover" src={`https://picsum.photos/seed/${event.id}b/50/50`} />
+                                    <img alt="Attendee" className="inline-block h-6 w-6 rounded-full ring-2 ring-white/20 object-cover" src={`https://picsum.photos/seed/${event.id}c/50/50`} />
+                                    <div className="h-6 w-6 rounded-full bg-white/20 backdrop-blur-sm ring-2 ring-white/20 flex items-center justify-center text-[8px] font-bold text-white">+12</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 ))}
@@ -95,18 +123,24 @@ export const Dashboard = () => {
 
         {/* Latest Updates */}
         <div className="px-6 pb-6">
-            <h2 className="text-lg font-bold text-gray-800 mb-4">Latest Updates</h2>
-            <div className="space-y-4">
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold text-slate-900">Latest Updates</h3>
+                <button onClick={() => navigate('/announcements')} className="text-blue-600 text-xs font-bold flex items-center gap-1">
+                    View All <ChevronRight size={14} />
+                </button>
+            </div>
+            <div className="flex flex-col gap-4">
                 {ANNOUNCEMENTS.slice(0,2).map(ann => (
-                <div key={ann.id} onClick={() => navigate(`/announcement/${ann.id}`)} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-4">
-                    <img src={ann.image} className="w-20 h-20 rounded-xl object-cover flex-shrink-0" alt="news" />
-                    <div className="flex flex-col justify-center">
+                <div key={ann.id} onClick={() => navigate(`/announcement/${ann.id}`)} className="flex overflow-hidden bg-white rounded-3xl shadow-sm border border-slate-100 h-36 w-full cursor-pointer active:scale-[0.98] transition-transform">
+                    <div className="w-28 shrink-0 bg-cover bg-center" style={{ backgroundImage: `url("${ann.image}")` }}></div>
+                    <div className="flex flex-col justify-center p-4 flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                            <span className={`w-2 h-2 rounded-full ${ann.category === 'Alert' ? 'bg-red-500' : 'bg-green-500'}`}></span>
-                            <span className="text-xs text-gray-400 uppercase font-semibold">{ann.category}</span>
+                            <span className={`w-1.5 h-1.5 rounded-full ${getCategoryColor(ann.category)}`}></span>
+                            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">{ann.category}</span>
                         </div>
-                        <h4 className="font-bold text-gray-800 text-sm line-clamp-2">{ann.title}</h4>
-                        <span className="text-xs text-gray-400 mt-2">{ann.date}</span>
+                        <h4 className="font-bold text-slate-900 text-[15px] leading-tight mb-1 truncate">{ann.title}</h4>
+                        <p className="text-slate-500 text-xs line-clamp-2 leading-relaxed">{ann.content}</p>
+                        <span className="text-slate-400 text-[10px] font-medium mt-auto pt-2">{ann.date}</span>
                     </div>
                 </div>
                 ))}

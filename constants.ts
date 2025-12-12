@@ -1,13 +1,43 @@
-import { Event, Announcement, Volunteer, User, Hall } from './types';
+import { Event, Announcement, Volunteer, User, Hall, Booking } from './types';
 
-export const CURRENT_USER: User = {
+// Default Resident Data
+export const RESIDENT_USER: User = {
   id: 'u1',
   name: 'Anoop',
   role: 'Resident',
   avatar: 'https://picsum.photos/seed/user1/200/200',
   email: 'anoop@community.com',
-  phone: '+1 (555) 123-4567',
-  address: 'Skyline Apts, Unit 402'
+  phone: '+91 98765 43210',
+  address: 'Block C, Apt 402',
+  bloodGroup: 'O+',
+  documents: [
+    { name: 'Driving License', type: 'PDF' },
+    { name: 'Vaccination Report', type: 'PDF' }
+  ]
+};
+
+// Mock Admin Data
+export const ADMIN_USER: User = {
+  id: 'admin1',
+  name: 'Rajsri Admin',
+  role: 'Admin',
+  avatar: 'https://ui-avatars.com/api/?name=Admin+User&background=0f172a&color=fff&size=200',
+  email: 'admin@rajsrispark.com',
+  phone: '+91 99999 99999',
+  address: 'Admin Office, Block A',
+  bloodGroup: 'B+',
+  documents: []
+};
+
+// CURRENT_USER is mutable to simulate login session changes
+export const CURRENT_USER: User = { ...RESIDENT_USER };
+
+// Helper to switch roles (Simulates backend login)
+export const switchUserRole = (role: 'Resident' | 'Admin') => {
+  const target = role === 'Admin' ? ADMIN_USER : RESIDENT_USER;
+  // We use Object.assign to mutate the exported object reference 
+  // so that imports in other files reflect the change immediately upon re-render
+  Object.assign(CURRENT_USER, target);
 };
 
 export const EVENTS: Event[] = [
@@ -20,7 +50,16 @@ export const EVENTS: Event[] = [
     category: 'Social',
     image: 'https://picsum.photos/seed/party/800/600',
     description: 'Join us for an evening of music, dance, and fine dining under the stars. The annual Summer Gala is our biggest event of the year!',
-    price: '$25'
+    price: '$25',
+    requirements: ['Formal Attire', 'Age 18+'],
+    benefits: ['Dinner Buffet', 'Live Band', 'Cocktails'],
+    capacity: 100,
+    registeredCount: 85,
+    attendees: [
+        'https://picsum.photos/seed/u2/100/100',
+        'https://picsum.photos/seed/u3/100/100',
+        'https://picsum.photos/seed/u4/100/100'
+    ]
   },
   {
     id: 'e2',
@@ -31,7 +70,15 @@ export const EVENTS: Event[] = [
     category: 'Wellness',
     image: 'https://picsum.photos/seed/yoga/800/600',
     description: 'Start your day with zen. Suitable for all levels. Please bring your own mat.',
-    price: 'Free'
+    price: 'Free',
+    requirements: ['Yoga Mat', 'Water Bottle'],
+    benefits: ['Instructor Led', 'Healthy Snacks'],
+    capacity: 20,
+    registeredCount: 5,
+    attendees: [
+        'https://picsum.photos/seed/u5/100/100',
+        'https://picsum.photos/seed/u6/100/100'
+    ]
   },
   {
     id: 'e3',
@@ -42,18 +89,35 @@ export const EVENTS: Event[] = [
     category: 'Social',
     image: 'https://picsum.photos/seed/rooftop/800/600',
     description: 'Meet your neighbors and enjoy cocktails with a view.',
-    price: '$10'
+    price: '$10',
+    requirements: ['Resident ID'],
+    benefits: ['Free Drinks', 'Music'],
+    capacity: 50,
+    registeredCount: 50, // Sold Out
+    attendees: [
+        'https://picsum.photos/seed/u7/100/100',
+        'https://picsum.photos/seed/u8/100/100',
+        'https://picsum.photos/seed/u9/100/100'
+    ]
   },
   {
     id: 'e4',
     title: 'Fall Potluck Dinner',
-    date: 'Nov 1, 2024',
+    date: 'Jan 1, 2026',
     time: '6:00 PM',
     location: 'Common Area, Lobby',
     category: 'Community',
     image: 'https://picsum.photos/seed/food/800/600',
     description: 'Bring a dish to share! We will provide drinks and cutlery.',
-    price: 'Free'
+    price: 'Free',
+    requirements: ['Bring a Dish'],
+    benefits: ['Community Bonding'],
+    capacity: 200,
+    registeredCount: 45,
+    attendees: [
+        'https://picsum.photos/seed/u10/100/100',
+        'https://picsum.photos/seed/u11/100/100'
+    ]
   }
 ];
 
@@ -62,6 +126,7 @@ export const ANNOUNCEMENTS: Announcement[] = [
     id: 'a1',
     title: 'Pool Renovation Update',
     date: 'Oct 24, 2023',
+    time: '6:00 AM - 10:00 PM',
     author: 'Admin Team',
     content: 'We are excited to announce that the community pool renovation project is entering its final phase. The new tiles have been installed, and the filtration system upgrade is complete. We expect to reopen next Monday.',
     image: 'https://picsum.photos/seed/pool/800/400',
@@ -132,10 +197,48 @@ export const VOLUNTEERS: Volunteer[] = [
 
 export const HALL_DETAILS: Hall = {
   id: 'h1',
-  name: 'Grand Community Hall',
+  name: 'Rajsri Community Hall',
   capacity: 150,
-  pricePerHour: 50,
+  pricePerDay: 500,
   image: 'https://picsum.photos/seed/hall/800/600',
   description: 'A modern, spacious hall perfect for community gatherings, workshops, and small events. Features high ceilings, excellent acoustics, and natural lighting.',
   amenities: ['Fast Wifi', 'Cooling', 'Projector', 'Parking', 'Sound System']
 };
+
+// Get current year and month for dynamic mock data
+const today = new Date();
+const y = today.getFullYear();
+const m = String(today.getMonth() + 1).padStart(2, '0');
+
+export const BOOKINGS: Booking[] = [
+  {
+    id: 'b1',
+    userId: 'u2',
+    hallId: 'h1',
+    startDate: `${y}-${m}-05`,
+    endDate: `${y}-${m}-05`,
+    status: 'Approved',
+    totalAmount: 500,
+    purpose: 'Birthday Party'
+  },
+  {
+    id: 'b2',
+    userId: 'u3',
+    hallId: 'h1',
+    startDate: `${y}-${m}-12`,
+    endDate: `${y}-${m}-14`, // 3 days
+    status: 'Approved',
+    totalAmount: 1500,
+    purpose: 'Wedding Reception'
+  },
+  {
+    id: 'b3',
+    userId: 'u1', // Current User
+    hallId: 'h1',
+    startDate: `${y}-${m}-20`,
+    endDate: `${y}-${m}-20`,
+    status: 'Pending',
+    totalAmount: 500,
+    purpose: 'Family Get-together'
+  }
+];

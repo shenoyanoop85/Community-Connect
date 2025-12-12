@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, Calendar, Zap, Bell, User } from 'lucide-react';
+import { Home, Calendar, Zap, Users, Megaphone } from 'lucide-react';
 
 const NavButton = ({ icon, active, onClick }: { icon: React.ReactNode, label: string, active: boolean, onClick: () => void }) => (
   <button 
@@ -18,20 +18,21 @@ export const BottomNav = () => {
   const isActive = (path: string) => location.pathname === path;
   
   // Don't show nav on detail pages to give full immersion
+  // Also hide on Login page ('/')
   const hiddenPaths = ['/emergency', '/event/', '/announcement/', '/book-hall'];
-  const shouldHide = hiddenPaths.some(path => location.pathname.includes(path) && path !== '/');
+  const shouldHide = location.pathname === '/' || hiddenPaths.some(path => location.pathname.includes(path));
 
   if (shouldHide) return null;
 
   return (
     <div className="fixed bottom-6 left-4 right-4 bg-white/90 backdrop-blur-md shadow-2xl rounded-full p-2 flex justify-between items-center z-50 border border-white/20">
-      <NavButton icon={<Home size={22} />} label="Home" active={isActive('/')} onClick={() => navigate('/')} />
+      <NavButton icon={<Home size={22} />} label="Home" active={isActive('/dashboard')} onClick={() => navigate('/dashboard')} />
       <NavButton icon={<Zap size={22} />} label="Events" active={isActive('/events')} onClick={() => navigate('/events')} />
       <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center -mt-8 shadow-lg shadow-blue-300 transform active:scale-95 transition-transform" onClick={() => navigate('/book-hall')}>
         <Calendar size={24} className="text-white" />
       </div>
-      <NavButton icon={<Bell size={22} />} label="News" active={isActive('/announcements')} onClick={() => navigate('/announcements')} />
-      <NavButton icon={<User size={22} />} label="Profile" active={isActive('/profile')} onClick={() => navigate('/profile')} />
+      <NavButton icon={<Megaphone size={22} />} label="News" active={isActive('/announcements')} onClick={() => navigate('/announcements')} />
+      <NavButton icon={<Users size={22} />} label="Volunteers" active={isActive('/volunteers')} onClick={() => navigate('/volunteers')} />
     </div>
   );
 };
