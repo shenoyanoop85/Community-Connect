@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Settings, LogOut, User, Bell, Shield, ChevronRight, Mail, Phone, MapPin, Droplet, FileText, Upload, Download, Check, X, Camera, Lock, Eye, Smartphone, AlertCircle } from 'lucide-react';
-import { CURRENT_USER } from '../constants';
+import { ChevronLeft, Settings, LogOut, User, Bell, Shield, ChevronRight, Mail, Phone, MapPin, Droplet, FileText, Upload, Download, Check, X, Camera, Lock, Smartphone, AlertCircle } from 'lucide-react';
+import { CURRENT_USER, switchUserRole } from '../constants';
 
 const ProfileItem = ({ icon, label, onClick }: any) => (
     <div onClick={onClick} className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors active:bg-gray-100">
@@ -122,6 +122,14 @@ export const Profile = () => {
             documents: [...(prev.documents || []), newDoc]
         }));
         if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const handleLogout = () => {
+        if (window.confirm('Are you sure you want to log out?')) {
+            // Reset to default role for security/clean state simulation
+            switchUserRole('Resident');
+            navigate('/');
+        }
     };
 
     // --- Sub-Pages Renderers ---
@@ -433,7 +441,10 @@ export const Profile = () => {
                             </div>
                         </div>
 
-                        <button className="w-full py-4 text-red-500 font-bold bg-red-50 rounded-2xl flex items-center justify-center gap-2 hover:bg-red-100 transition-colors mb-4">
+                        <button 
+                            onClick={handleLogout}
+                            className="w-full py-4 text-red-500 font-bold bg-red-50 rounded-2xl flex items-center justify-center gap-2 hover:bg-red-100 transition-colors mb-4"
+                        >
                             <LogOut size={18} /> Log Out
                         </button>
                     </>
