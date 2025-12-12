@@ -45,25 +45,57 @@ export const Dashboard = () => {
   return (
     <PullToRefresh onRefresh={handleRefresh}>
         <div className="min-h-screen bg-slate-50 pb-28">
-        {/* Header */}
-        <div className="px-6 pt-12 pb-6 flex justify-between items-center bg-white/80 backdrop-blur-xl sticky top-0 z-20 shadow-sm border-b border-gray-100/50">
-            <div>
-            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Welcome back</p>
-            <h1 className="text-2xl font-black text-gray-900 flex items-center gap-2">
-                {CURRENT_USER.name} <span className="text-2xl animate-pulse">👋</span>
-            </h1>
+        
+        {/* Header Section (Redesigned Hero) */}
+        <div className="relative h-[280px] rounded-b-[20px] overflow-hidden shadow-2xl mb-6 group shrink-0">
+            {/* Background & Overlay */}
+            <div className="absolute inset-0">
+                <img 
+                    src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=2070&auto=format&fit=crop" 
+                    className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105" 
+                    alt="Dashboard Header" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/40 to-slate-900/90"></div>
             </div>
-            <div className="flex items-center gap-3">
-                <button className="w-10 h-10 bg-white border border-gray-100 rounded-full flex items-center justify-center relative shadow-sm hover:bg-gray-50 transition-colors" onClick={() => navigate('/announcements')}>
-                    <Bell size={20} className="text-gray-600" />
-                    <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+
+            {/* Content */}
+            <div className="relative z-10 px-6 pt-16 flex justify-between items-start">
+                <div className="flex items-center gap-5">
+                    <div className="relative cursor-pointer group/avatar" onClick={() => navigate('/profile')}>
+                        {/* Glow Effect */}
+                        <div className="absolute -inset-1 bg-white/20 rounded-full blur-sm group-hover/avatar:bg-white/30 transition-colors"></div>
+                        <img 
+                            src={CURRENT_USER.avatar} 
+                            alt="Profile" 
+                            className="relative w-16 h-16 rounded-full border-[3px] border-white shadow-xl object-cover" 
+                        />
+                        <div className="absolute bottom-1 right-1 w-4 h-4 bg-emerald-500 border-[3px] border-slate-900 rounded-full z-10"></div>
+                    </div>
+                    <div className="flex flex-col pt-1">
+                        <h1 className="text-3xl font-bold text-white tracking-tight leading-none mb-1.5 drop-shadow-md">
+                            Hey {CURRENT_USER.name.split(' ')[0]},
+                        </h1>
+                        <p className="text-blue-100/90 font-medium text-sm tracking-wide flex items-center gap-2">
+                             Good morning <span className="animate-pulse">✨</span>
+                        </p>
+                    </div>
+                </div>
+
+                <button 
+                    onClick={() => navigate('/notifications')}
+                    className="w-12 h-12 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-white/20 transition-all active:scale-95 group/bell"
+                >
+                    <Bell size={22} className="group-hover/bell:rotate-12 transition-transform" />
+                    <span className="absolute top-3.5 right-3.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-slate-900/50 shadow-sm"></span>
                 </button>
-                <img src={CURRENT_USER.avatar} alt="Profile" className="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover cursor-pointer" onClick={() => navigate('/profile')} />
             </div>
+            
+            {/* Decorative Overlay for depth */}
+            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-slate-50 to-transparent"></div>
         </div>
 
         {/* Feature Tiles & Quick Actions */}
-        <div className="px-6 mt-8 mb-8">
+        <div className="px-6 mb-8">
             <div className="grid grid-cols-2 gap-5 mb-8">
                 <Tile 
                     icon={<Zap className="text-blue-600 fill-blue-600" size={32} />} 

@@ -10,6 +10,7 @@ import { Emergency } from './pages/Emergency';
 import { BookHall } from './pages/BookHall';
 import { Volunteers } from './pages/Volunteers';
 import { Profile } from './pages/Profile';
+import { Notifications } from './pages/Notifications';
 import { BottomNav } from './components/BottomNav';
 import { SplashScreen } from './components/SplashScreen';
 
@@ -35,6 +36,7 @@ const AppContent = () => {
         <Route path="/book-hall" element={<BookHall />} />
         <Route path="/volunteers" element={<Volunteers />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/notifications" element={<Notifications />} />
       </Routes>
       <BottomNav />
     </div>
