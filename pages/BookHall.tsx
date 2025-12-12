@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, MapPin, Activity, Settings, FileText, ChevronRight, ArrowRight, Calendar as CalendarIcon, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
@@ -342,12 +343,12 @@ export const BookHall = () => {
                 </div>
                 
                 <div className="flex items-center text-gray-500 text-sm mb-4">
-                    <MapPin size={14} className="mr-1" /> C-Bock, Rajsri Apartment
+                    <MapPin size={14} className="mr-1" /> {HALL_DETAILS.address}
                 </div>
 
                 <div className="flex gap-2 mb-6">
-                    <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded flex items-center gap-1">4.8 ★</span>
-                    <span className="text-xs text-gray-400 underline py-1">120 reviews</span>
+                    <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded flex items-center gap-1">{HALL_DETAILS.rating} ★</span>
+                    <span className="text-xs text-gray-400 underline py-1">{HALL_DETAILS.reviews} reviews</span>
                 </div>
 
                 <div className="mb-8">

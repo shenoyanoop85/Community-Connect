@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Calendar, Zap, Shield, Users, MapPin, ChevronRight, Megaphone, Check } from 'lucide-react';
+import { Bell, Calendar, Zap, Shield, Users, MapPin, ChevronRight, Megaphone, LayoutGrid } from 'lucide-react';
 import { CURRENT_USER, EVENTS, ANNOUNCEMENTS } from '../constants';
 import { PullToRefresh } from '../components/PullToRefresh';
 
@@ -29,7 +30,6 @@ export const Dashboard = () => {
   const navigate = useNavigate();
   
   const handleRefresh = async () => {
-    // Simulate data fetching
     await new Promise(resolve => setTimeout(resolve, 1500));
   };
 
@@ -44,10 +44,10 @@ export const Dashboard = () => {
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
-        <div className="min-h-screen bg-slate-50 pb-28">
+        <div className="min-h-screen bg-slate-50 pb-28 relative">
         
         {/* Header Section (Redesigned Hero) */}
-        <div className="relative h-[280px] rounded-b-[20px] overflow-hidden shadow-2xl mb-6 group shrink-0">
+        <div className="relative h-[280px] rounded-b-[40px] overflow-hidden shadow-2xl mb-6 group shrink-0">
             {/* Background & Overlay */}
             <div className="absolute inset-0">
                 <img 
@@ -211,6 +211,17 @@ export const Dashboard = () => {
                 ))}
             </div>
         </div>
+
+        {/* ADMIN FAB */}
+        {CURRENT_USER.role === 'Admin' && (
+            <button 
+                onClick={() => navigate('/admin')}
+                className="fixed bottom-24 right-6 w-14 h-14 bg-slate-900 text-white rounded-2xl shadow-2xl flex items-center justify-center z-50 hover:scale-105 transition-transform"
+            >
+                <LayoutGrid size={24} />
+            </button>
+        )}
+        
         </div>
     </PullToRefresh>
   );

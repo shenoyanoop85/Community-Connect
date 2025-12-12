@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronLeft, Share2, MapPin, Calendar, Clock, ArrowRight, Bell, CheckCircle, Star, BellRing } from 'lucide-react';
@@ -74,10 +75,10 @@ export const EventDetails = () => {
                 {/* Organizer Row */}
                 <div className="flex items-center justify-between mb-8 p-4 bg-gray-50 rounded-2xl border border-gray-100">
                     <div className="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/organizer/100/100" className="w-10 h-10 rounded-full object-cover ring-2 ring-white" alt="org" />
+                        <img src={`https://ui-avatars.com/api/?name=${event.organizer || 'Admin'}&background=random`} className="w-10 h-10 rounded-full object-cover ring-2 ring-white" alt="org" />
                         <div>
                             <p className="text-[10px] text-gray-400 font-bold tracking-wider uppercase">Organizer</p>
-                            <p className="font-bold text-gray-800 text-sm">Community Committee</p>
+                            <p className="font-bold text-gray-800 text-sm">{event.organizer || 'Community Committee'}</p>
                         </div>
                     </div>
                     <button className="px-4 py-1.5 bg-white text-blue-600 border border-blue-100 text-xs font-bold rounded-full hover:bg-blue-50 transition-colors">Follow</button>
@@ -108,9 +109,9 @@ export const EventDetails = () => {
                 </div>
 
                 {/* Requirements & Benefits */}
-                {(event.requirements || event.benefits) && (
+                {(event.requirements?.length || event.benefits?.length) ? (
                     <div className="mb-8 grid grid-cols-1 gap-6">
-                        {event.requirements && (
+                        {event.requirements && event.requirements.length > 0 && (
                             <div>
                                 <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                                     <CheckCircle size={16} className="text-slate-400" /> Requirements
@@ -125,7 +126,7 @@ export const EventDetails = () => {
                             </div>
                         )}
                         
-                        {event.benefits && (
+                        {event.benefits && event.benefits.length > 0 && (
                             <div>
                                 <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                                     <Star size={16} className="text-amber-400 fill-amber-400" /> Member Benefits
@@ -140,7 +141,7 @@ export const EventDetails = () => {
                             </div>
                         )}
                     </div>
-                )}
+                ) : null}
 
                 {/* Attendees & Capacity */}
                 <div className="mb-8 p-5 bg-white border border-gray-100 rounded-[24px] shadow-sm">
@@ -186,7 +187,7 @@ export const EventDetails = () => {
                         </div>
                         <div>
                             <p className="font-bold text-gray-900 text-lg mb-1">{event.location}</p>
-                            <p className="text-gray-500 text-sm">Rajsri Community Hall, Block A<br/>123 Green Street, City Center</p>
+                            <p className="text-gray-500 text-sm whitespace-pre-wrap">{event.address || `${event.location}, City Center`}</p>
                         </div>
                     </div>
                 </div>

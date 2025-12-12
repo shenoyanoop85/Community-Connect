@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Settings, LogOut, User, Bell, Shield, ChevronRight, Mail, Phone, MapPin, Droplet, FileText, Upload, Download, Check, X, Camera, Lock, Smartphone, AlertCircle } from 'lucide-react';
+import { ChevronLeft, Settings, LogOut, User, Bell, Shield, ChevronRight, Mail, Phone, MapPin, Droplet, FileText, Upload, Download, Check, X, Camera, Lock, Smartphone, AlertCircle, Building, DoorOpen } from 'lucide-react';
 import { CURRENT_USER, switchUserRole } from '../constants';
 
 const ProfileItem = ({ icon, label, onClick }: any) => (
@@ -23,9 +24,10 @@ const DetailRow = ({ icon, label, value, isEditing, onChange, field, type = "tex
             <input 
                 type={type}
                 value={value}
-                disabled={field === 'phone'}
+                disabled={field === 'phone'} // Phone number usually immutable or needs OTP
                 onChange={(e) => onChange(field, e.target.value)}
                 className={`text-sm font-bold text-gray-800 text-right w-full bg-gray-50 border rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-blue-100 transition-all ${field === 'phone' ? 'text-gray-400 bg-gray-100 cursor-not-allowed' : 'border-gray-200 focus:border-blue-400'}`}
+                placeholder={`Enter ${label}`}
             />
         ) : (
             <span className="text-sm font-bold text-gray-800 text-right truncate max-w-[180px]">{value}</span>
@@ -74,7 +76,17 @@ export const Profile = () => {
     // --- Handlers ---
 
     const handleInputChange = (field: string, value: string) => {
-        setUserData(prev => ({ ...prev, [field]: value }));
+        setUserData(prev => {
+            const newState = { ...prev, [field]: value };
+            
+            // Auto-update full address string if block or apartment changes
+            if (field === 'block' || field === 'apartment') {
+                const b = field === 'block' ? value : (prev.block || '');
+                const a = field === 'apartment' ? value : (prev.apartment || '');
+                newState.address = `${b}-${a}`.toUpperCase(); // Force Format "Block-Apt"
+            }
+            return newState;
+        });
     };
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,7 +97,12 @@ export const Profile = () => {
         }
     };
 
-    const handleSave = () => setIsEditing(false);
+    const handleSave = () => {
+        // Here you would typically save to backend
+        // Update CURRENT_USER ref for demo persistence
+        Object.assign(CURRENT_USER, userData);
+        setIsEditing(false);
+    };
     
     const handleCancel = () => {
         setUserData(CURRENT_USER);
@@ -336,14 +353,38 @@ export const Profile = () => {
                             field="phone" 
                             onChange={handleInputChange} 
                         />
-                        <DetailRow 
-                            icon={<MapPin size={16} />} 
-                            label="Address" 
-                            value={userData.address} 
-                            isEditing={isEditing} 
-                            field="address" 
-                            onChange={handleInputChange} 
-                        />
+                        
+                        {/* Address Block - Split into Block & Apt when editing */}
+                        {isEditing ? (
+                            <>
+                                <DetailRow 
+                                    icon={<Building size={16} />} 
+                                    label="Block" 
+                                    value={userData.block || ''} 
+                                    isEditing={true} 
+                                    field="block" 
+                                    onChange={handleInputChange} 
+                                />
+                                <DetailRow 
+                                    icon={<DoorOpen size={16} />} 
+                                    label="Apartment No" 
+                                    value={userData.apartment || ''} 
+                                    isEditing={true} 
+                                    field="apartment" 
+                                    onChange={handleInputChange} 
+                                />
+                            </>
+                        ) : (
+                            <DetailRow 
+                                icon={<MapPin size={16} />} 
+                                label="Unit" 
+                                value={userData.address} 
+                                isEditing={false} 
+                                field="address" 
+                                onChange={handleInputChange} 
+                            />
+                        )}
+
                         <DetailRow 
                             icon={<Droplet size={16} />} 
                             label="Blood Group" 

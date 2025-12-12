@@ -1,7 +1,53 @@
+
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ChevronLeft, Share2, Settings, Activity, FileText, Download, CheckCircle, Wrench, AlertCircle, Calendar } from 'lucide-react';
+import { ChevronLeft, Share2, Activity, FileText, Download, CheckCircle, Wrench, AlertCircle, Calendar } from 'lucide-react';
 import { ANNOUNCEMENTS } from '../constants';
+
+// Simple parser for custom tags: [highlight]text[/highlight], [quote]text[/quote], [b]text[/b]
+const renderRichText = (text: string) => {
+    if (!text) return null;
+
+    // Split by newlines first to handle paragraphs
+    const paragraphs = text.split('\n\n');
+
+    return paragraphs.map((paragraph, pIndex) => {
+        // Simple regex-based tokenization for inline styles
+        // Matches [tag]content[/tag] or plain text
+        const parts = paragraph.split(/(\[highlight\].*?\[\/highlight\]|\[quote\].*?\[\/quote\]|\[b\].*?\[\/b\])/g);
+
+        // Check if the entire paragraph is a quote (optional optimization, but we handle inline too)
+        const isQuoteBlock = parts.some(p => p.startsWith('[quote]'));
+
+        if (isQuoteBlock && parts.length <= 3) {
+             // Handle blockquote specifically if it's the main content of the line
+             const content = paragraph.replace(/\[quote\]|\[\/quote\]/g, '');
+             return (
+                 <blockquote key={pIndex} className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl my-6 italic text-blue-800 font-medium text-sm">
+                     {content}
+                 </blockquote>
+             );
+        }
+
+        return (
+            <p key={pIndex} className="mb-4 leading-relaxed">
+                {parts.map((part, i) => {
+                    if (part.startsWith('[highlight]')) {
+                        return <span key={i} className="font-bold text-blue-600 bg-blue-50 px-1 rounded">{part.replace(/\[highlight\]|\[\/highlight\]/g, '')}</span>;
+                    }
+                    if (part.startsWith('[b]')) {
+                        return <strong key={i} className="font-bold text-gray-900">{part.replace(/\[b\]|\[\/b\]/g, '')}</strong>;
+                    }
+                    // Fallback for inline quotes if mixed with text
+                    if (part.startsWith('[quote]')) {
+                        return <span key={i} className="italic text-gray-500">"{part.replace(/\[quote\]|\[\/quote\]/g, '')}"</span>;
+                    }
+                    return <span key={i}>{part}</span>;
+                })}
+            </p>
+        );
+    });
+};
 
 export const AnnouncementDetails = () => {
     const navigate = useNavigate();
@@ -95,38 +141,35 @@ export const AnnouncementDetails = () => {
                     </div>
                  </div>
 
-                 <div className="prose prose-blue text-gray-600 mb-8 leading-relaxed">
-                    <p>{item.content}</p>
-                    <p className="mt-4">Starting next Monday, the pool will reopen with extended summer hours. Residents can enjoy the facilities from <span className="font-bold text-blue-600">6:00 AM to 10:00 PM</span> daily. We are also introducing morning aqua-aerobics classes every Tuesday and Thursday, free for all registered residents.</p>
-                    
-                    <blockquote className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl my-6 italic text-blue-800 font-medium text-sm">
-                        "The new heated section will be available starting November 1st, perfect for evening swims."
-                    </blockquote>
-
-                    <p>Please review the attached schedule for specific maintenance blocks where the pool might be temporarily unavailable for cleaning.</p>
+                 {/* Rich Text Content */}
+                 <div className="prose prose-blue text-gray-600 mb-8">
+                    {renderRichText(item.content)}
                  </div>
 
-                 <div className="mb-12">
-                    <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                        Attached Files <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">2</span>
-                    </h3>
-                    <div className="space-y-3">
-                        {item.attachments?.map((file, idx) => (
-                            <div key={idx} className="flex items-center p-4 rounded-2xl bg-gray-50 border border-gray-100 hover:bg-gray-100 transition-colors cursor-pointer">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-4 ${file.type === 'pdf' ? 'bg-red-100 text-red-500' : 'bg-blue-100 text-blue-500'}`}>
-                                    <FileText size={20} />
+                 {/* Dynamic Attachments */}
+                 {item.attachments && item.attachments.length > 0 && (
+                     <div className="mb-12">
+                        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            Attached Files <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">{item.attachments.length}</span>
+                        </h3>
+                        <div className="space-y-3">
+                            {item.attachments.map((file, idx) => (
+                                <div key={idx} className="flex items-center p-4 rounded-2xl bg-gray-50 border border-gray-100 hover:bg-gray-100 transition-colors cursor-pointer">
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-4 ${file.type === 'pdf' ? 'bg-red-100 text-red-500' : 'bg-blue-100 text-blue-500'}`}>
+                                        <FileText size={20} />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-semibold text-sm text-gray-800">{file.name}</p>
+                                        <p className="text-xs text-gray-400">{file.size} • {file.type === 'pdf' ? 'PDF Document' : 'Image'}</p>
+                                    </div>
+                                    <button className="p-2 text-gray-400 hover:text-gray-600">
+                                        <Download size={20} />
+                                    </button>
                                 </div>
-                                <div className="flex-1">
-                                    <p className="font-semibold text-sm text-gray-800">{file.name}</p>
-                                    <p className="text-xs text-gray-400">{file.size} • {file.type === 'pdf' ? 'PDF Document' : 'Image'}</p>
-                                </div>
-                                <button className="p-2 text-gray-400 hover:text-gray-600">
-                                    <Download size={20} />
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                 </div>
+                            ))}
+                        </div>
+                     </div>
+                 )}
 
                  <div className="pb-10">
                     <button 

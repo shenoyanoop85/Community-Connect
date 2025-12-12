@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { Login } from './pages/Login';
@@ -11,6 +12,14 @@ import { BookHall } from './pages/BookHall';
 import { Volunteers } from './pages/Volunteers';
 import { Profile } from './pages/Profile';
 import { Notifications } from './pages/Notifications';
+
+// Admin Pages
+import { AdminDashboard } from './pages/admin/AdminDashboard';
+import { AdminResidents } from './pages/admin/AdminResidents';
+import { AdminEvents } from './pages/admin/AdminEvents';
+import { AdminAnnouncements } from './pages/admin/AdminAnnouncements';
+import { AdminBookings } from './pages/admin/AdminBookings';
+
 import { BottomNav } from './components/BottomNav';
 import { SplashScreen } from './components/SplashScreen';
 
@@ -37,6 +46,13 @@ const AppContent = () => {
         <Route path="/volunteers" element={<Volunteers />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/notifications" element={<Notifications />} />
+        
+        {/* Admin Routes */}
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/residents" element={<AdminResidents />} />
+        <Route path="/admin/events" element={<AdminEvents />} />
+        <Route path="/admin/announcements" element={<AdminAnnouncements />} />
+        <Route path="/admin/bookings" element={<AdminBookings />} />
       </Routes>
       <BottomNav />
     </div>

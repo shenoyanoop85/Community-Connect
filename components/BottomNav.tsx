@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Home, Calendar, Zap, Users, Megaphone } from 'lucide-react';
@@ -18,8 +19,8 @@ export const BottomNav = () => {
   const isActive = (path: string) => location.pathname === path;
   
   // Don't show nav on detail pages to give full immersion
-  // Also hide on Login page ('/')
-  const hiddenPaths = ['/emergency', '/event/', '/announcement/', '/book-hall'];
+  // Also hide on Login page ('/') and Admin Pages ('/admin')
+  const hiddenPaths = ['/emergency', '/event/', '/announcement/', '/book-hall', '/admin'];
   const shouldHide = location.pathname === '/' || hiddenPaths.some(path => location.pathname.includes(path));
 
   if (shouldHide) return null;
